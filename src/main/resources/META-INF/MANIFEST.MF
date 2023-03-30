@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: org.test.Main
+Main-Class: org.branch166.Main
 

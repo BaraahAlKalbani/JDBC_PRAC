@@ -1,18 +1,17 @@
-package org.test;
+package org.branch166;
 
 import java.sql.*;
 
 public class Main {
     public static void main(String[] args) {
-       System.out.println(System.getenv("DB_USER_NAME"));
-       System.out.println(System.getenv("DB_USER_PASS"));
+        final String DB_URL = "jdbc:mysql://localhost:3306/ims";
+        final String DB_USER_NAME = System.getenv("DB_USER_NAME");
+        final String DB_USER_PASS = System.getenv("DB_USER_PASS");
+        Connection connection = null;
         try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/ims",
-                    System.getenv("DB_USER_NAME"),
-                    System.getenv("DB_USER_PASS")
-            );
+            connection = DriverManager.getConnection(DB_URL, DB_USER_NAME, DB_USER_PASS);
             Statement statement = connection.createStatement();
+
             statement.execute("select * from student;");
 
             ResultSet rs = statement.getResultSet();
@@ -42,11 +41,25 @@ public class Main {
             System.out.println("\nDELETED the record with the id: "+idToDelete);
             displayallSet(rs,statement);
 
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("SQL Exception: " + e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.err.println("SQL Exception: " + e.getMessage());
+            }
         }
     }
+
+    /**
+     * A helper method that displays the contents of the 'student' table.
+     * @param rs the result set to use for displaying the table contents
+     * @param statement the statement object used to execute the query
+     * @throws SQLException if an error occurs while accessing the database
+     */
     public static void displayallSet(ResultSet rs,Statement statement) throws SQLException {
         statement.execute("select * from student;");
         rs = statement.getResultSet();
@@ -58,6 +71,12 @@ public class Main {
             System.out.println("ID: "+id+", NAME: "+name+", EMAIL: "+email);
         }
     }
+
+    /**
+     * A helper method that displays the contents of a result set.
+     * @param rs the result set to display
+     * @throws SQLException if an error occurs while accessing the result set
+     */
     public static  void displaySet(ResultSet rs) throws SQLException {
         while (rs.next())
         {
